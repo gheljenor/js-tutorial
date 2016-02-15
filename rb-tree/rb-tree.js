@@ -71,6 +71,7 @@ RBTree.prototype.remove = function (value) {
 
 RBTree.prototype._balanceRemove = function (node) {
     if (!node.parent) {
+        this.root = node;
         return this;
     }
 
