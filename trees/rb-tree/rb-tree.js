@@ -1,11 +1,14 @@
-var RBTree = function () {
+var Tree = require("../tree");
+
+var RBTree = function() {
+    Tree.call(this);
     this.root = null;
 };
 
 RBTree.RED = true;
 RBTree.BLACK = false;
 
-RBTree._createNode = function (value, parent, color) {
+RBTree._createNode = function(value, parent, color) {
     return {
         parent: parent,
         value: value,
@@ -15,7 +18,9 @@ RBTree._createNode = function (value, parent, color) {
     };
 };
 
-RBTree.prototype.add = function (value) {
+RBTree.prototype = new Tree();
+
+RBTree.prototype.add = function(value) {
     var node;
 
     if (!this.root) {
@@ -32,7 +37,7 @@ RBTree.prototype.add = function (value) {
     return this._balanceInsert(node);
 };
 
-RBTree.prototype.remove = function (value) {
+RBTree.prototype.remove = function(value) {
     var node = this.find(value);
 
     if (!node) {
@@ -69,7 +74,7 @@ RBTree.prototype.remove = function (value) {
     return this._balanceRemove(child);
 };
 
-RBTree.prototype._balanceRemove = function (node) {
+RBTree.prototype._balanceRemove = function(node) {
     if (!node.parent) {
         this.root = node;
         return this;
@@ -127,9 +132,10 @@ RBTree.prototype._balanceRemove = function (node) {
     return this;
 };
 
-RBTree.prototype._balanceInsert = function (node) {
+RBTree.prototype._balanceInsert = function(node) {
     if (!node.parent) {
         node.color = RBTree.BLACK;
+        this.root = node;
     } else if (node.parent.color === RBTree.RED) { // если предок чёрный, то ничего делать не надо
         var parent = node.parent;
         var grand = parent.parent;
@@ -166,7 +172,7 @@ RBTree.prototype._balanceInsert = function (node) {
     return this;
 };
 
-RBTree.prototype.find = function (value) {
+RBTree.prototype.find = function(value) {
     var node = this.root;
 
     while (node.value !== null && node.value !== value) {
@@ -184,37 +190,7 @@ RBTree.prototype.find = function (value) {
     }
 };
 
-RBTree.prototype._findMin = function (node) {
-    while (node.left.value !== null) {
-        node = node.left;
-    }
-
-    return node;
-};
-
-RBTree.prototype._findMax = function (node) {
-    while (node.right.value !== null) {
-        node = node.right;
-    }
-
-    return node;
-};
-
-RBTree.prototype._findInsert = function (value) {
-    var node = this.root;
-
-    while (node.value !== null) {
-        if (node.value > value) {
-            node = node.left;
-        } else {
-            node = node.right;
-        }
-    }
-
-    return node;
-};
-
-RBTree.prototype._rotateLeft = function (node) {
+RBTree.prototype._rotateLeft = function(node) {
     var pivot = node.right;
     pivot.parent = node.parent;
 
@@ -239,7 +215,8 @@ RBTree.prototype._rotateLeft = function (node) {
     return this;
 };
 
-RBTree.prototype._rotateRight = function (node) {
+//TODO: проверить есть ли отличия во вращении с AVL-деревом
+RBTree.prototype._rotateRight = function(node) {
     var pivot = node.left;
     pivot.parent = node.parent;
 
@@ -264,6 +241,4 @@ RBTree.prototype._rotateRight = function (node) {
     return this;
 };
 
-RBTree.prototype._ballance = function (node) {
-
-};
+module.exports = RBTree;

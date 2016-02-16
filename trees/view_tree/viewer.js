@@ -9,38 +9,6 @@ var Presenter = function (tree, field) {
     this.links = {};
 };
 
-Presenter.prototype.walk = function (callback) {
-    var node = this.tree.root;
-    var prev = node;
-    var x = 0;
-    var y = 0;
-
-    while (node) {
-        if (node.right === prev) {
-            prev = node;
-            node = node.parent;
-            y--;
-            x += node.right === prev ? -1 : 1;
-        } else if (node.left && node.left !== prev) {
-            prev = node;
-            node = node.left;
-            y++;
-            x--;
-        } else {
-            callback(node, x, y);
-
-            if (node.right) {
-                prev = node;
-                node = node.right;
-                y++;
-                x++;
-            } else {
-                prev = node.right;
-            }
-        }
-    }
-};
-
 Presenter.prototype.update = function () {
     var k, l, node;
 
@@ -48,7 +16,7 @@ Presenter.prototype.update = function () {
     var maxX = 0;
     var maxY = 0;
 
-    this.walk(function (node, x, y) {
+    this.tree.walk(function (node, x, y) {
         node._visited = true;
 
         if (node.id) {
