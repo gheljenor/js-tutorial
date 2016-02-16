@@ -1,22 +1,22 @@
-var Presenter = function (tree, field) {
+var Viewer = function(tree, field) {
     this.tree = tree;
     this.field = field;
 
     this.field.svg = SVG(this.field).size('100%', '100%');
 
-    this._id = 0;
+    this._id = 1;
     this.nodes = [];
     this.links = {};
 };
 
-Presenter.prototype.update = function () {
+Viewer.prototype.update = function() {
     var k, l, node;
 
     var minX = 0;
     var maxX = 0;
     var maxY = 0;
 
-    this.tree.walk(function (node, x, y) {
+    this.tree.walk(function(node, x, y) {
         node._visited = true;
 
         if (node.id) {
@@ -47,7 +47,7 @@ Presenter.prototype.update = function () {
     this._redraw(minX, maxX, maxY);
 };
 
-Presenter.prototype._drawNode = function (node) {
+Viewer.prototype._drawNode = function(node) {
     if (!node.dom) {
         node.dom = document.createElement("div");
         node.dom.classList.add("node");
@@ -62,7 +62,7 @@ Presenter.prototype._drawNode = function (node) {
     node.dom.text.innerText = node.value;
 };
 
-Presenter.prototype._addNode = function (node, x, y) {
+Viewer.prototype._addNode = function(node, x, y) {
     node.id = this._id++;
     node._x = x;
     node._y = y;
@@ -74,7 +74,7 @@ Presenter.prototype._addNode = function (node, x, y) {
     }
 };
 
-Presenter.prototype._updateNode = function (node, x, y) {
+Viewer.prototype._updateNode = function(node, x, y) {
     node._x = x;
     node._y = y;
     this._drawNode(node);
@@ -87,7 +87,7 @@ Presenter.prototype._updateNode = function (node, x, y) {
     }
 };
 
-Presenter.prototype._removeNode = function (node) {
+Viewer.prototype._removeNode = function(node) {
     this.field.removeChild(node.dom);
     delete node.dom;
 
@@ -97,7 +97,7 @@ Presenter.prototype._removeNode = function (node) {
     }
 };
 
-Presenter.prototype._redraw = function (minX, maxX, height) {
+Viewer.prototype._redraw = function(minX, maxX, height) {
     var node;
     var x, y;
 
@@ -109,14 +109,17 @@ Presenter.prototype._redraw = function (minX, maxX, height) {
     for (var k = 0, l = this.nodes.length; k < l; k++) {
         node = this.nodes[k];
 
-        x = (node._x - minX) / width;
-        y = node._y / height;
+        x = (node._x - minX);
+        y = node._y;
 
-        node.dom.style.left = (x * 100).toFixed(3) + "%";
-        node.dom.style.top = (y * 100).toFixed(3) + "%";
+        node.dom.style.left = (x / width * 100).toFixed(3) + "%";
+        node.dom.style.top = (y / height * 100).toFixed(3) + "%";
 
         if (this.links[node.id]) {
-            this.links[node.id].animate(100).plot(
+            (function(link, x1, y1, x2, y2) {
+                link.animate(500, '>').attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
+            })(
+                this.links[node.id],
                 x * fWidth,
                 y * fHeight,
                 (node.parent._x - minX) * fWidth,
@@ -125,3 +128,5 @@ Presenter.prototype._redraw = function (minX, maxX, height) {
         }
     }
 };
+
+module.exports = Viewer;

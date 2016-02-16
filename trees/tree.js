@@ -31,7 +31,9 @@ Tree.prototype.walk = function(callback) {
             prev = node;
             node = node.parent;
             y--;
-            x += node.right === prev ? -1 : 1;
+            if (node) {
+                x += node.right === prev ? -1 : 1;
+            }
         } else if (node.left && node.left !== prev) {
             prev = node;
             node = node.left;
