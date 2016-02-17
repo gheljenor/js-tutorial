@@ -20,27 +20,25 @@ Tree.prototype.find = function(value) {
     }
 };
 
-Tree.prototype.walk = function(callback) {
+Tree.prototype.walk = function(callback, nulls) {
     var node = this.root;
     var prev = node;
-    var x = 0;
     var y = 0;
+    var x = 0;
 
     while (node) {
         if (node.right === prev) {
             prev = node;
             node = node.parent;
             y--;
-            if (node) {
-                x += node.right === prev ? -1 : 1;
-            }
+            x = x >> 1;
         } else if (node.left && node.left !== prev) {
             prev = node;
             node = node.left;
             y++;
-            x--;
+            x = x * 2;
         } else {
-            if (node.value != null) {
+            if (node.value != null || nulls) {
                 callback(node, x, y);
             }
 
@@ -48,7 +46,7 @@ Tree.prototype.walk = function(callback) {
                 prev = node;
                 node = node.right;
                 y++;
-                x++;
+                x = x * 2 + 1;
             } else {
                 prev = node.right;
             }
@@ -85,6 +83,5 @@ Tree.prototype._findInsert = function(value) {
 
     return node;
 };
-
 
 module.exports = Tree;

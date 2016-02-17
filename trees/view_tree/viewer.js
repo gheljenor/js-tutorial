@@ -11,12 +11,10 @@ var Viewer = function(tree, field) {
 
 Viewer.prototype.update = function() {
     var k, l, node;
-
-    var minX = 0;
-    var maxX = 0;
-    var maxY = 0;
+    var height = 0;
 
     this.tree.walk(function(node, x, y) {
+        height = Math.max(height, y);
         node._visited = true;
 
         if (node.id) {
@@ -25,11 +23,7 @@ Viewer.prototype.update = function() {
             this._addNode(node, x, y);
             this.nodes.push(node);
         }
-
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        maxY = Math.max(maxY, y);
-    }.bind(this));
+    }.bind(this), true);
 
     for (k = 0, l = this.nodes.length; k < l; k++) {
         node = this.nodes[k];
@@ -44,7 +38,7 @@ Viewer.prototype.update = function() {
         delete node._visited;
     }
 
-    this._redraw(minX, maxX, maxY);
+    this._redraw(height + 1);
 };
 
 Viewer.prototype._drawNode = function(node) {
@@ -64,8 +58,8 @@ Viewer.prototype._drawNode = function(node) {
 
 Viewer.prototype._addNode = function(node, x, y) {
     node.id = this._id++;
-    node._x = x;
-    node._y = y;
+    node.x = x;
+    node.y = y;
 
     this._drawNode(node);
 
@@ -75,8 +69,8 @@ Viewer.prototype._addNode = function(node, x, y) {
 };
 
 Viewer.prototype._updateNode = function(node, x, y) {
-    node._x = x;
-    node._y = y;
+    node.x = x;
+    node.y = y;
     this._drawNode(node);
 
     if (!node.parent && this.links[node.id]) {
@@ -97,33 +91,30 @@ Viewer.prototype._removeNode = function(node) {
     }
 };
 
-Viewer.prototype._redraw = function(minX, maxX, height) {
+Viewer.prototype._redraw = function(height) {
     var node;
     var x, y;
 
-    var width = maxX - minX;
-
-    var fWidth = this.field.offsetWidth / width;
-    var fHeight = this.field.offsetHeight / height;
+    height = height - 1;
 
     for (var k = 0, l = this.nodes.length; k < l; k++) {
         node = this.nodes[k];
 
-        x = (node._x - minX);
-        y = node._y;
+        x = ((0.5 + node.x) / Math.pow(2, node.y) * 100).toFixed(3) + "%";
+        y = (node.y / height * 100).toFixed(3) + "%";
 
-        node.dom.style.left = (x / width * 100).toFixed(3) + "%";
-        node.dom.style.top = (y / height * 100).toFixed(3) + "%";
+        node.dom.style.left = x;
+        node.dom.style.top = y;
 
         if (this.links[node.id]) {
             (function(link, x1, y1, x2, y2) {
                 link.animate(500, '>').attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2);
             })(
                 this.links[node.id],
-                x * fWidth,
-                y * fHeight,
-                (node.parent._x - minX) * fWidth,
-                node.parent._y * fHeight
+                x,
+                y,
+                ((0.5 + node.parent.x) / Math.pow(2, node.parent.y) * 100).toFixed(3) + "%",
+                (node.parent.y / height * 100).toFixed(3) + "%"
             );
         }
     }
