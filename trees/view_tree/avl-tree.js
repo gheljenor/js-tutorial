@@ -22,14 +22,28 @@ view._drawNode = function(node) {
     node.dom.len.innerHTML = node.length;
 };
 
-tree.add = function() {
+tree.add = function(v) {
+    console.log("add", v);
     var result = add.apply(tree, arguments);
     view.update();
     return result;
 };
 
-tree.remove = function() {
+tree.remove = function(v) {
+    console.log("remove", v);
     var result = remove.apply(tree, arguments);
     view.update();
     return result;
+};
+
+window.add = function(count) {
+    for (var k = 0; k < count; k++) {
+        tree.add(Math.floor(Math.random() * 100));
+    }
+};
+
+window.remove = function(count) {
+    for (var k = 0; k < count; k++) {
+        tree.remove(Math.floor(Math.random() * 100));
+    }
 };

@@ -23,7 +23,7 @@ Viewer.prototype.update = function() {
             this._addNode(node, x, y);
             this.nodes.push(node);
         }
-    }.bind(this), true);
+    }.bind(this), false);
 
     for (k = 0, l = this.nodes.length; k < l; k++) {
         node = this.nodes[k];

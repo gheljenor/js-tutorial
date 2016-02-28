@@ -26,6 +26,8 @@ Tree.prototype.walk = function(callback, nulls) {
     var y = 0;
     var x = 0;
 
+    var i = 0;
+
     while (node) {
         if (node.right === prev) {
             prev = node;
@@ -51,6 +53,12 @@ Tree.prototype.walk = function(callback, nulls) {
                 prev = node.right;
             }
         }
+
+        //i++;
+        //if (i > 250) {
+        //    console.error ("INFINITE!!!");
+        //    return;
+        //}
     }
 };
 
